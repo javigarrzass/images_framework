@@ -37,9 +37,6 @@
 [submodule "alignment/openpose_landmarks"]
 	path = alignment/openpose_landmarks
 	url = git@github.com:bobetocalo/openpose_landmarks.git
-[submodule "recognition/ricardo24_recognition"]
-	path = recognition/ricardo24_recognition
-	url = git@github.com:pcr-upm/ricardo24_recognition.git
 [submodule "generation/controlnet23_generation"]
 	path = generation/controlnet23_generation
 	url = git@github.com:bobetocalo/controlnet23_generation.git
@@ -61,12 +58,12 @@
 [submodule "alignment/students_headpose"]
 	path = alignment/students_headpose
 	url = git@github.com:pcr-upm/students_headpose.git
-[submodule "alignment/wdann_landmarks"]
-	path = alignment/wdann_landmarks
-	url = git@github.com:pcr-upm/wdann_landmarks.git
 [submodule "alignment/saul24_gaze"]
 	path = alignment/saul24_gaze
 	url = git@github.com:pcr-upm/saul24_gaze.git
 [submodule "alignment/access25_headpose"]
 	path = alignment/access25_headpose
 	url = git@github.com:pcr-upm/access25_headpose.git
+[submodule "alignment/wdann_landmarks"]
+	path = alignment/wdann_landmarks
+	url = git@github.com:pcr-upm/wdann_landmarks.git

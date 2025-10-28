@@ -6,6 +6,7 @@ __email__ = 'roberto.valle@upm.es'
 import uuid
 import numpy as np
 from enum import Enum
+from scipy.spatial.transform import Rotation
 from .categories import Name
 from images_framework.alignment.landmarks import PersonLandmarkPart as Pl
 
@@ -66,7 +67,7 @@ class PersonObject(GenericObject):
     def __init__(self):
         from images_framework.alignment.landmarks import FaceLandmarkPart as Pf, HandLandmarkPart as Ph, BodyLandmarkPart as Pb
         super().__init__()
-        self.headpose = np.array([[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]])
+        self.headpose = Rotation.from_euler('YXZ', [-1, -1, -1], degrees=True).as_matrix()
         self.attributes = list([])
         self.landmarks = {part.value: {} for part in Pl}
         self.landmarks[Pl.FACE.value] = {part.value: list([]) for part in Pf}
