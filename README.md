@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://private-user-images.githubusercontent.com/5092334/516463026-2d19f5ef-44d9-4375-ab0b-5688b99e3272.svg?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM1ODA1ODAsIm5iZiI6MTc2MzU4MDI4MCwicGF0aCI6Ii81MDkyMzM0LzUxNjQ2MzAyNi0yZDE5ZjVlZi00NGQ5LTQzNzUtYWIwYi01Njg4Yjk5ZTMyNzIuc3ZnP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTExOSUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMTlUMTkyNDQwWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MDY4NDMzZjNhNWFjMDUxMmZhNTU1MWUxMjJiZGI4NDJmNWU0OTRhNzUzNGVhYThmNGY5ZTEwZTUyNWI3ZGUyZSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.1NF8509AtRyJDBr6wdMKhDdO1TGlvJdaVGw8SAXBQ_w" width="300">
+<img src="https://github.com/user-attachments/assets/b283f327-679b-4e1d-88bf-d57cf0745a2f" width="300">
 </h1><br>
 
 [![PyPI version](https://badge.fury.io/py/images-framework.svg)](https://badge.fury.io/py/images-framework)
