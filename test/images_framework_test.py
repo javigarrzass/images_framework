@@ -19,20 +19,19 @@ def main():
     Images framework test script.
     """
     print('OpenCV ' + cv2.__version__)
-    composite = Composite()
-
-    # Process frame and show results
-    ann = GenericGroup()
-    pred = GenericGroup()
+    # Process frame and show result
+    ann, pred = GenericGroup(), GenericGroup()
     for roi in [[0, 0, 600, 600], [0, 600, 600, 1200], [0, 1200, 600, 1800]]:
         img_pred = AerialImage('images_framework/test/example.tif')
         img_pred.tile = np.array(roi)
         pred.add_image(img_pred)
-    composite.process(ann, pred)
     viewer = Viewer('images_framework_test')
     for img_pred in pred.images:
         viewer.set_image(img_pred)
+    composite = Composite()
+    composite.process(ann, pred)
     composite.show(viewer, ann, pred)
+    # Save result
     dirname = 'images_framework/output/images/'
     Path(dirname).mkdir(parents=True, exist_ok=True)
     viewer.save(dirname)
