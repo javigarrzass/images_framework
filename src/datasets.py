@@ -60,28 +60,20 @@ class Mnist(Database):
     def __init__(self):
         from images_framework.categories.characters import Character as Oc
         super().__init__()
-        self._names = ['mnist', 'svhn', 'svhn_cropped']
+        self._names = ['mnist']
         self._categories = {0: Oc.CHARACTER.ZERO, 1: Oc.CHARACTER.ONE, 2: Oc.CHARACTER.TWO, 3: Oc.CHARACTER.THREE, 4: Oc.CHARACTER.FOUR, 5: Oc.CHARACTER.FIVE, 6: Oc.CHARACTER.SIX, 7: Oc.CHARACTER.SEVEN, 8: Oc.CHARACTER.EIGHT, 9: Oc.CHARACTER.NINE}
         self._colors = get_palette(len(self._categories))
 
     def load_filename(self, path, db, line):
-        import uuid
         from PIL import Image
         seq = GenericGroup()
         parts = line.strip().split(';')
         image = GenericImage(path + parts[0])
         width, height = Image.open(image.filename).size
-        label = parts[1]
-        # temp_filename = path + str(uuid.uuid4())+'.png'
-        # img = line['image'].numpy()
-        # Image.fromarray(img).save(temp_filename)
-        # image = GenericImage(temp_filename)
-        # height, width = img.shape[:2]
-        # label = line['label'].numpy()
         image.tile = np.array([0, 0, width, height])
         obj = GenericObject()
         obj.bb = (0, 0, width, height)
-        obj.add_category(GenericCategory(self._categories[int(label)]))
+        obj.add_category(GenericCategory(self._categories[int(parts[1])]))
         image.add_object(obj)
         seq.add_image(image)
         return seq
@@ -589,7 +581,6 @@ class AFLW2000(Database):
     def load_filename(self, path, db, line):
         import os
         import cv2
-        import uuid
         import itertools
         from PIL import Image
         from pathlib import Path
@@ -600,19 +591,11 @@ class AFLW2000(Database):
         parts = line.strip().split(';')
         image = GenericImage(path + parts[0])
         width, height = Image.open(image.filename).size
-        # temp_filename = path + str(uuid.uuid4())+'.png'
-        # img = line['image'].numpy()
-        # lnds = line['landmarks_3d'].numpy()
-        # pose = line['pose_params'].numpy()
-        # Image.fromarray(img).save(temp_filename)
-        # image = GenericImage(temp_filename)
-        # height, width = img.shape[:2]
         image.tile = np.array([0, 0, width, height])
         obj = DiffusionObject()
         obj.add_category(GenericCategory(Name(parts[1])))  # Set identity as category to split the validation set
         euler = [float(parts[3]), float(parts[2]), float(parts[4])]
         obj.headpose = Rotation.from_euler('XYZ', euler, degrees=True).as_matrix()
-        # obj.headpose = Rotation.from_euler('YXZ', [pose[1], pose[0], pose[2]], degrees=False).as_matrix()
         # Skip images with angles outside the range (-99, 99)
         # if np.any(np.abs(euler) > 99):
         #     return seq
@@ -621,7 +604,6 @@ class AFLW2000(Database):
             label = indices[idx]
             lp = list(self._landmarks.keys())[next((ids for ids, xs in enumerate(self._landmarks.values()) for x in xs if x == label), None)]
             pos = (int(round(float(parts[(2*idx)+5]))), int(round(float(parts[(2*idx)+6]))))
-            # pos = (int(round(float(lnds[idx][0]))), int(round(float(lnds[idx][1]))))
             obj.add_landmark(GenericLandmark(label, lp, pos, True), lps[type(lp)])
         obj.bb = cv2.boundingRect(np.array([[pt.pos for pt in list(itertools.chain.from_iterable(obj.landmarks[Pl.FACE.value].values()))]]).astype(int))
         obj.bb = (obj.bb[0], obj.bb[1], obj.bb[0]+obj.bb[2], obj.bb[1]+obj.bb[3])
@@ -779,9 +761,9 @@ class XView(Database):
         from images_framework.categories.vehicles import Vehicle as Ov
         from images_framework.categories.buildings import Building as Ob
         super().__init__()
-        self._names = ['xview', 'XView']
-        self._categories = {13: Oi.VEHICLE.FIXED_WING_AIRCRAFT.CARGO_PLANE, 15: Oi.VEHICLE.HELICOPTER, 18: Oi.VEHICLE.PASSENGER_VEHICLE.SMALL_CAR, 19: Oi.VEHICLE.PASSENGER_VEHICLE.BUS, 20: Oi.VEHICLE.TRUCK, 41: Oi.VEHICLE.MARITIME_VESSEL.MOTORBOAT, 47: Oi.VEHICLE.MARITIME_VESSEL.FISHING_VESSEL, 60: Oi.VEHICLE.ENGINEERING_VEHICLE.DUMP_TRUCK, 64: Oi.VEHICLE.ENGINEERING_VEHICLE.EXCAVATOR, 71: Oi.BUILDING, 86: Oi.STORAGE_TANK, 89: Oi.SHIPPING_CONTAINER}
-        # self._categories = {11: Ov.VEHICLE.FIXED_WING_AIRCRAFT, 12: Ov.VEHICLE.FIXED_WING_AIRCRAFT.SMALL_AIRCRAFT, 13: Ov.VEHICLE.FIXED_WING_AIRCRAFT.CARGO_PLANE, 15: Ov.VEHICLE.HELICOPTER, 17: Ov.VEHICLE.PASSENGER_VEHICLE, 18: Ov.VEHICLE.PASSENGER_VEHICLE.SMALL_CAR, 19: Ov.VEHICLE.PASSENGER_VEHICLE.BUS, 20: Ov.VEHICLE.TRUCK.PICKUP_TRUCK, 21: Ov.VEHICLE.TRUCK.UTILITY_TRUCK, 23: Ov.VEHICLE.TRUCK, 24: Ov.VEHICLE.TRUCK.CARGO_TRUCK, 25: Ov.VEHICLE.TRUCK.TRUCK_BOX, 26: Ov.VEHICLE.TRUCK.TRUCK_TRACTOR, 27: Ov.VEHICLE.TRUCK.TRAILER, 28: Ov.VEHICLE.TRUCK.TRUCK_FLATBED, 29: Ov.VEHICLE.TRUCK.TRUCK_LIQUID, 32: Ov.VEHICLE.ENGINEERING_VEHICLE.CRANE_TRUCK, 33: Ov.VEHICLE.RAILWAY_VEHICLE, 34: Ov.VEHICLE.RAILWAY_VEHICLE.PASSENGER_CAR, 35: Ov.VEHICLE.RAILWAY_VEHICLE.CARGO_CAR, 36: Ov.VEHICLE.RAILWAY_VEHICLE.FLAT_CAR, 37: Ov.VEHICLE.RAILWAY_VEHICLE.TANK_CAR, 38: Ov.VEHICLE.RAILWAY_VEHICLE.LOCOMOTIVE, 40: Ov.VEHICLE.MARITIME_VESSEL, 41: Ov.VEHICLE.MARITIME_VESSEL.MOTORBOAT, 42: Ov.VEHICLE.MARITIME_VESSEL.SAILBOAT, 44: Ov.VEHICLE.MARITIME_VESSEL.TUGBOAT, 45: Ov.VEHICLE.MARITIME_VESSEL.BARGE, 47: Ov.VEHICLE.MARITIME_VESSEL.FISHING_VESSEL, 49: Ov.VEHICLE.MARITIME_VESSEL.FERRY, 50: Ov.VEHICLE.MARITIME_VESSEL.YATCH, 51: Ov.VEHICLE.MARITIME_VESSEL.CONTAINER_SHIP, 52: Ov.VEHICLE.MARITIME_VESSEL.OIL_TANKER, 53: Ov.VEHICLE.ENGINEERING_VEHICLE, 54: Ov.VEHICLE.ENGINEERING_VEHICLE.TOWER_CRANE, 55: Ov.VEHICLE.ENGINEERING_VEHICLE.CONTAINER_CRANE, 56: Ov.VEHICLE.ENGINEERING_VEHICLE.REACH_STACKER, 57: Ov.VEHICLE.ENGINEERING_VEHICLE.STRADDLE_CARRIER, 59: Ov.VEHICLE.ENGINEERING_VEHICLE.MOBILE_CRANE, 60: Ov.VEHICLE.ENGINEERING_VEHICLE.DUMP_TRUCK, 61: Ov.VEHICLE.ENGINEERING_VEHICLE.HAUL_TRUCK, 62: Ov.VEHICLE.ENGINEERING_VEHICLE.SCRAPER_TRACTOR, 63: Ov.VEHICLE.ENGINEERING_VEHICLE.FRONT_LOADER, 64: Ov.VEHICLE.ENGINEERING_VEHICLE.EXCAVATOR, 65: Ov.VEHICLE.ENGINEERING_VEHICLE.CEMENT_MIXER, 66: Ov.VEHICLE.ENGINEERING_VEHICLE.GROUND_GRADER, 71: Ob.BUILDING.HUT_TENT, 72: Ob.BUILDING.SHED, 73: Oi.BUILDING, 74: Ob.BUILDING.AIRCRAFT_HANGAR, 76: Ob.BUILDING.DAMAGED_BUILDING, 77: Ob.BUILDING.FACILITY, 79: Oi.CONSTRUCTION_SITE, 83: Ov.VEHICLE.VEHICLE_LOT, 84: Oi.HELIPAD, 86: Oi.STORAGE_TANK, 89: Oi.SHIPPING_CONTAINER_LOT, 91: Oi.SHIPPING_CONTAINER, 93: Oi.PYLON, 94: Oi.TOWER_STRUCTURE}
+        self._names = ['xview']
+        # self._categories = {13: Oi.VEHICLE.FIXED_WING_AIRCRAFT.CARGO_PLANE, 15: Oi.VEHICLE.HELICOPTER, 18: Oi.VEHICLE.PASSENGER_VEHICLE.SMALL_CAR, 19: Oi.VEHICLE.PASSENGER_VEHICLE.BUS, 20: Oi.VEHICLE.TRUCK, 41: Oi.VEHICLE.MARITIME_VESSEL.MOTORBOAT, 47: Oi.VEHICLE.MARITIME_VESSEL.FISHING_VESSEL, 60: Oi.VEHICLE.ENGINEERING_VEHICLE.DUMP_TRUCK, 64: Oi.VEHICLE.ENGINEERING_VEHICLE.EXCAVATOR, 71: Oi.BUILDING, 86: Oi.STORAGE_TANK, 89: Oi.SHIPPING_CONTAINER}
+        self._categories = {11: Ov.VEHICLE.FIXED_WING_AIRCRAFT, 12: Ov.VEHICLE.FIXED_WING_AIRCRAFT.SMALL_AIRCRAFT, 13: Ov.VEHICLE.FIXED_WING_AIRCRAFT.CARGO_PLANE, 15: Ov.VEHICLE.HELICOPTER, 17: Ov.VEHICLE.PASSENGER_VEHICLE, 18: Ov.VEHICLE.PASSENGER_VEHICLE.SMALL_CAR, 19: Ov.VEHICLE.PASSENGER_VEHICLE.BUS, 20: Ov.VEHICLE.TRUCK.PICKUP_TRUCK, 21: Ov.VEHICLE.TRUCK.UTILITY_TRUCK, 23: Ov.VEHICLE.TRUCK, 24: Ov.VEHICLE.TRUCK.CARGO_TRUCK, 25: Ov.VEHICLE.TRUCK.TRUCK_BOX, 26: Ov.VEHICLE.TRUCK.TRUCK_TRACTOR, 27: Ov.VEHICLE.TRUCK.TRAILER, 28: Ov.VEHICLE.TRUCK.TRUCK_FLATBED, 29: Ov.VEHICLE.TRUCK.TRUCK_LIQUID, 32: Ov.VEHICLE.ENGINEERING_VEHICLE.CRANE_TRUCK, 33: Ov.VEHICLE.RAILWAY_VEHICLE, 34: Ov.VEHICLE.RAILWAY_VEHICLE.PASSENGER_CAR, 35: Ov.VEHICLE.RAILWAY_VEHICLE.CARGO_CAR, 36: Ov.VEHICLE.RAILWAY_VEHICLE.FLAT_CAR, 37: Ov.VEHICLE.RAILWAY_VEHICLE.TANK_CAR, 38: Ov.VEHICLE.RAILWAY_VEHICLE.LOCOMOTIVE, 40: Ov.VEHICLE.MARITIME_VESSEL, 41: Ov.VEHICLE.MARITIME_VESSEL.MOTORBOAT, 42: Ov.VEHICLE.MARITIME_VESSEL.SAILBOAT, 44: Ov.VEHICLE.MARITIME_VESSEL.TUGBOAT, 45: Ov.VEHICLE.MARITIME_VESSEL.BARGE, 47: Ov.VEHICLE.MARITIME_VESSEL.FISHING_VESSEL, 49: Ov.VEHICLE.MARITIME_VESSEL.FERRY, 50: Ov.VEHICLE.MARITIME_VESSEL.YATCH, 51: Ov.VEHICLE.MARITIME_VESSEL.CONTAINER_SHIP, 52: Ov.VEHICLE.MARITIME_VESSEL.OIL_TANKER, 53: Ov.VEHICLE.ENGINEERING_VEHICLE, 54: Ov.VEHICLE.ENGINEERING_VEHICLE.TOWER_CRANE, 55: Ov.VEHICLE.ENGINEERING_VEHICLE.CONTAINER_CRANE, 56: Ov.VEHICLE.ENGINEERING_VEHICLE.REACH_STACKER, 57: Ov.VEHICLE.ENGINEERING_VEHICLE.STRADDLE_CARRIER, 59: Ov.VEHICLE.ENGINEERING_VEHICLE.MOBILE_CRANE, 60: Ov.VEHICLE.ENGINEERING_VEHICLE.DUMP_TRUCK, 61: Ov.VEHICLE.ENGINEERING_VEHICLE.HAUL_TRUCK, 62: Ov.VEHICLE.ENGINEERING_VEHICLE.SCRAPER_TRACTOR, 63: Ov.VEHICLE.ENGINEERING_VEHICLE.FRONT_LOADER, 64: Ov.VEHICLE.ENGINEERING_VEHICLE.EXCAVATOR, 65: Ov.VEHICLE.ENGINEERING_VEHICLE.CEMENT_MIXER, 66: Ov.VEHICLE.ENGINEERING_VEHICLE.GROUND_GRADER, 71: Ob.BUILDING.HUT_TENT, 72: Ob.BUILDING.SHED, 73: Oi.BUILDING, 74: Ob.BUILDING.AIRCRAFT_HANGAR, 76: Ob.BUILDING.DAMAGED_BUILDING, 77: Ob.BUILDING.FACILITY, 79: Oi.CONSTRUCTION_SITE, 83: Ov.VEHICLE.VEHICLE_LOT, 84: Oi.HELIPAD, 86: Oi.STORAGE_TANK, 89: Oi.SHIPPING_CONTAINER_LOT, 91: Oi.SHIPPING_CONTAINER, 93: Oi.PYLON, 94: Oi.TOWER_STRUCTURE}
         self._colors = get_palette(len(self._categories))
 
     def load_filename(self, path, db, line):
@@ -1252,7 +1234,7 @@ class RecGeoAIPanels(Database):
     def __init__(self):
         from images_framework.categories.panels import Panel as Op
         super().__init__()
-        self._names = ['RecGeoAIPanels']
+        self._names = ['rec_geoai_panels']
         self._categories = {'1CC': Op.SOLAR_PANEL.HOT_CELL, 'SMC': Op.SOLAR_PANEL.HOT_CELL_CHAIN, 'CCS': Op.SOLAR_PANEL.SEVERAL_HOT_CELLS, '1PC': Op.SOLAR_PANEL.HOT_SPOT, 'PCS': Op.SOLAR_PANEL.SEVERAL_HOT_SPOTS, 'PID': Op.SOLAR_PANEL.POTENTIAL_INDUCED_DEGRADATION, 'DRT': Op.SOLAR_PANEL.DIRTY_PANEL, 'BRK': Op.SOLAR_PANEL.BROKEN_PANEL, 'DSC': Op.SOLAR_PANEL.DISCONNECTED_PANEL, 'SDW': Op.SOLAR_PANEL.SHADES, 'SDWD': Op.SOLAR_PANEL.SHADES_HOT_CELL_CHAIN, 'NDM': Op.SOLAR_PANEL.NO_DAMAGE}
         self._colors = get_palette(len(self._categories))
 
