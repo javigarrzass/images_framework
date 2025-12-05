@@ -60,20 +60,29 @@ class Mnist(Database):
     def __init__(self):
         from images_framework.categories.characters import Character as Oc
         super().__init__()
-        self._names = ['mnist']
+        self._names = ['mnist', 'svhn', 'svhn_cropped']
         self._categories = {0: Oc.CHARACTER.ZERO, 1: Oc.CHARACTER.ONE, 2: Oc.CHARACTER.TWO, 3: Oc.CHARACTER.THREE, 4: Oc.CHARACTER.FOUR, 5: Oc.CHARACTER.FIVE, 6: Oc.CHARACTER.SIX, 7: Oc.CHARACTER.SEVEN, 8: Oc.CHARACTER.EIGHT, 9: Oc.CHARACTER.NINE}
         self._colors = get_palette(len(self._categories))
 
     def load_filename(self, path, db, line):
+        import uuid
         from PIL import Image
         seq = GenericGroup()
-        parts = line.strip().split(';')
-        image = GenericImage(path + parts[0])
-        width, height = Image.open(image.filename).size
+        # parts = line.strip().split(';')
+        # image = GenericImage(path + parts[0])
+        # width, height = Image.open(image.filename).size
+        # label = parts[1]
+        temp_filename = path + str(uuid.uuid4())+'.png'
+        img = line['image'].numpy()
+        img = np.repeat(img, 3, axis=2) if img.shape[2] == 1 else img
+        Image.fromarray(img.astype(np.uint8), mode='RGB').save(temp_filename)
+        image = GenericImage(temp_filename)
+        height, width = img.shape[:2]
+        label = line['label'].numpy()
         image.tile = np.array([0, 0, width, height])
         obj = GenericObject()
         obj.bb = (0, 0, width, height)
-        obj.add_category(GenericCategory(self._categories[int(parts[1])]))
+        obj.add_category(GenericCategory(self._categories[int(label)]))
         image.add_object(obj)
         seq.add_image(image)
         return seq
@@ -581,6 +590,7 @@ class AFLW2000(Database):
     def load_filename(self, path, db, line):
         import os
         import cv2
+        import uuid
         import itertools
         from PIL import Image
         from pathlib import Path
@@ -591,11 +601,19 @@ class AFLW2000(Database):
         parts = line.strip().split(';')
         image = GenericImage(path + parts[0])
         width, height = Image.open(image.filename).size
+        # temp_filename = path + str(uuid.uuid4())+'.png'
+        # img = line['image'].numpy()
+        # lnds = line['landmarks_3d'].numpy()
+        # pose = line['pose_params'].numpy()
+        # Image.fromarray(img).save(temp_filename)
+        # image = GenericImage(temp_filename)
+        # height, width = img.shape[:2]
         image.tile = np.array([0, 0, width, height])
         obj = DiffusionObject()
         obj.add_category(GenericCategory(Name(parts[1])))  # Set identity as category to split the validation set
         euler = [float(parts[3]), float(parts[2]), float(parts[4])]
         obj.headpose = Rotation.from_euler('XYZ', euler, degrees=True).as_matrix()
+        # obj.headpose = Rotation.from_euler('YXZ', [pose[1], pose[0], pose[2]], degrees=False).as_matrix()
         # Skip images with angles outside the range (-99, 99)
         # if np.any(np.abs(euler) > 99):
         #     return seq
@@ -604,6 +622,7 @@ class AFLW2000(Database):
             label = indices[idx]
             lp = list(self._landmarks.keys())[next((ids for ids, xs in enumerate(self._landmarks.values()) for x in xs if x == label), None)]
             pos = (int(round(float(parts[(2*idx)+5]))), int(round(float(parts[(2*idx)+6]))))
+            # pos = (int(round(float(lnds[idx][0]))), int(round(float(lnds[idx][1]))))
             obj.add_landmark(GenericLandmark(label, lp, pos, True), lps[type(lp)])
         obj.bb = cv2.boundingRect(np.array([[pt.pos for pt in list(itertools.chain.from_iterable(obj.landmarks[Pl.FACE.value].values()))]]).astype(int))
         obj.bb = (obj.bb[0], obj.bb[1], obj.bb[0]+obj.bb[2], obj.bb[1]+obj.bb[3])
