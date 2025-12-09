@@ -22,8 +22,8 @@ class Parts(Enum):
     """
     DETECTION = 'detection'
     SEGMENTATION = 'segmentation'
-    ALIGNMENT = 'alignment'
-    RECOGNITION = 'recognition'
+    REGRESSION = 'regression'
+    CLASSIFICATION = 'classification'
     GENERATION = 'generation'
     ALL = 'all'
 
@@ -50,9 +50,9 @@ class Segmentators(Enum):
 
 
 @unique
-class Aligners(Enum):
+class Regressors(Enum):
     """
-    Different object alignment algorithms.
+    Different regression algorithms.
     """
     CIARP17_HEADPOSE = 'ciarp17_headpose'
     OPAL23_HEADPOSE = 'opal23_headpose'
@@ -69,12 +69,11 @@ class Aligners(Enum):
 
 
 @unique
-class Recognitors(Enum):
+class Classifiers(Enum):
     """
-    Different object recognition algorithms.
+    Different classification algorithms.
     """
     RESNET15_RECOGNITION = 'resnet15_recognition'
-    DANN16_RECOGNITION = 'dann16_recognition'
 
 
 @unique
