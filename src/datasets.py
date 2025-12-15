@@ -88,6 +88,32 @@ class Mnist(Database):
         return seq
 
 
+class FER2013(Database):
+    def __init__(self):
+        from images_framework.categories.emotions import Emotion as Oe
+        super().__init__()
+        self._names = ['fer2013']
+        self._categories = {0: Oe.FACE.ANGRY, 1: Oe.FACE.DISGUST, 2: Oe.FACE.FEAR, 3: Oe.FACE.HAPPY, 4: Oe.FACE.NEUTRAL, 5: Oe.FACE.SAD, 6: Oe.FACE.SURPRISE}
+        self._colors = get_palette(len(self._categories))
+
+    def load_filename(self, path, db, line):
+        import uuid
+        seq = GenericGroup()
+        temp_filename = path + str(uuid.uuid4())+'.png'
+        img = line['image']
+        img.save(temp_filename)
+        image = GenericImage(temp_filename)
+        height, width = img.size
+        label = line['label']
+        image.tile = np.array([0, 0, width, height])
+        obj = GenericObject()
+        obj.bb = (0, 0, width, height)
+        obj.add_category(GenericCategory(self._categories[int(label)]))
+        image.add_object(obj)
+        seq.add_image(image)
+        return seq
+
+
 class Fill50K(Database):
     def __init__(self):
         super().__init__()
