@@ -59,8 +59,8 @@
 	path = regression/alignment/openpose_landmarks
 	url = git@github.com:bobetocalo/openpose_landmarks.git
 [submodule "regression/alignment/students_landmarks"]
-	path = regression/alignment/students_landmarks
-	url = git@github.com:pcr-upm/students_landmarks.git
+    path = regression/alignment/students_landmarks
+	url = git@github.com:bobetocalo/students_landmarks.git
 [submodule "regression/alignment/wdann_landmarks"]
 	path = regression/alignment/wdann_landmarks
 	url = git@github.com:pcr-upm/wdann_landmarks.git
