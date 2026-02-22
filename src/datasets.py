@@ -1365,3 +1365,60 @@ class WorldView3(Database):
                 image.add_object(obj)
         seq.add_image(image)
         return seq
+
+class ReInterHand(Database):
+    def __init__(self):
+        from images_framework.regression.alignment.landmarks import HandLandmarkPart as Ph
+        super().__init__()
+        self._names = ['reinterhand']
+        self._landmarks = {
+            Ph.RWRIST : (0, ),
+            Ph.RTHUMB : (1, 2, 3, 4),
+            Ph.RINDEX : (5, 6, 7, 8),
+            Ph.RMIDDLE : (9, 10, 11, 12),
+            Ph.RRING : (13, 14, 15, 16),
+            Ph.RPINKY : (17, 18, 19, 20),
+
+            Ph.LWRIST : (21, ),
+            Ph.LTHUMB : (22, 23, 24, 25),
+            Ph.LINDEX : (26, 27, 28, 29),
+            Ph.LMIDDLE : (30, 31, 32, 33),
+            Ph.LRING : (34, 35, 36, 37),
+            Ph.LPINKY : (38, 39, 40, 41)
+        }
+        self._categories = {0: Oi.PERSON}
+        self._colors = [(0, 255, 0)] # RGB => Verde
+
+    def load_filename(self, path, db, line):
+        import os
+        from PIL import Image
+        from images_framework.regression.alignment.landmarks import lps
+        from .annotations import PersonObject
+
+        seq = GenericGroup()
+        parts = line.strip().split(';')
+
+        ruta = os.path.join(path, parts[0])
+        imagen = GenericImage(ruta)
+
+        width, height = Image.open(imagen.filename).size
+        imagen.tile = np.array([0, 0, width, height])
+
+        obj = PersonObject()
+        obj.add_category(GenericCategory(self._categories[0]))
+
+        for label in range(42):
+            ix = 1 + (label * 2)
+            iy = 2+ (label * 2)
+
+            posx = float(parts[ix])
+            posy = float(parts[iy])
+
+            lp = list(self._landmarks.keys())[next((ids for ids, xs in enumerate(self._landmarks.values()) for x in xs if x == label), None)]
+
+            obj.add_landmark(GenericLandmark(label, lp, (posx, posy), True), lps[type(lp)])
+
+        obj.bb = (0, 0, width, height)
+        imagen.add_object(obj)
+        seq.add_image(imagen)
+        return seq
